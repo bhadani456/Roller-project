@@ -1,0 +1,15 @@
+New-Item -Path 'C:\Java2' -ItemType Directory
+Invoke-WebRequest https://stephenrgdiag.blob.core.windows.net/package/jdk-13.0.2_windows-x64_bin.exe -OutFile (Join-Path C:\Java jdk-13.0.2_windows-x64_bin.exe)
+C:\Java\jdk-13.0.2_windows-x64_bin.exe /s
+Start-Sleep -s 60
+[System.Environment]::SetEnvironmentVariable("JAVA_HOME", "C:\Program Files\Java\jdk-13.0.2")
+[System.Environment]::SetEnvironmentVariable("Path", [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine) + ";$($env:JAVA_HOME)\bin")
+New-Item -Path 'C:\Maven' -ItemType Directory
+Invoke-WebRequest https://mirrors.estointernet.in/apache/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.zip -OutFile (Join-Path C:\Maven apache-maven-3.6.3-bin.zip)
+Expand-Archive -LiteralPath C:\Maven\apache-maven-3.6.3-bin.zip -DestinationPath C:\Maven
+[System.Environment]::SetEnvironmentVariable("MAVEN_HOME", "C:\Maven\apache-maven-3.6.3")
+[System.Environment]::SetEnvironmentVariable("Path", [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine) + ";$($env:MAVEN_HOME)\bin")
+netsh advfirewall firewall add rule name = "Open port 8080 test" dir=in action=allow protocol=TCP localport=8080
+mvn -DskipTests=true install
+cd app
+mvn jetty:run
